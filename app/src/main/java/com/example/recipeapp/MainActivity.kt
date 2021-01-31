@@ -16,13 +16,23 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontSynthesis
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import com.example.recipeapp.domain.model.Recipe
 import com.example.recipeapp.fragments.RecipeListFragment
+import com.example.recipeapp.network.model.RecipeNetworkEntity
+import com.example.recipeapp.network.model.RecipeNetworkMapper
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        val mapper = RecipeNetworkMapper()
+
+        val recipe = Recipe()
+
+        val networkEntity: RecipeNetworkEntity = mapper.mapToEntity(recipe)
+
+        val r: Recipe  = mapper.mapFromEntity(networkEntity)
 
     }
 }
