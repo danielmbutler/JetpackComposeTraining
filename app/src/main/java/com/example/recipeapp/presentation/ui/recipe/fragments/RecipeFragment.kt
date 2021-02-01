@@ -20,7 +20,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class RecipeFragment  : Fragment(){
 
-    
+
         override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
