@@ -60,6 +60,8 @@ class RecipeListFragment : Fragment() {
 
                 val query = viewModel.query.value
 
+                val selectedCategory = viewModel.selectedCategory.value
+
                 Column {
                     Surface(
                         modifier = Modifier
@@ -91,7 +93,7 @@ class RecipeListFragment : Fragment() {
                                     },
                                     onImeActionPerformed = { action, softKeyboardController ->
                                         if(action == ImeAction.Search){
-                                            viewModel.newSearch(query)
+                                            viewModel.newSearch()
                                             softKeyboardController
                                                 ?.hideSoftwareKeyboard()
                                         }
@@ -104,14 +106,16 @@ class RecipeListFragment : Fragment() {
                             }
                             ScrollableRow(
                                 modifier = Modifier.fillMaxWidth()
+                                    .padding(start = 8.dp, bottom = 8.dp)
                             ){
                                 for(category in getAllFoodCategories()){
                                     FoodCategoryChip(
                                         category = category.value,
-                                        onExecuteSearch = {
-                                            viewModel.onQueryChanged(it)
-                                            viewModel.newSearch(it)
-                                        }
+                                        isSelected = selectedCategory == category,
+                                        onSelectedCategoryChanged = {
+                                            viewModel.onSelectedCategoryChanged(it)
+                                        },
+                                        onExecuteSearch = viewModel::newSearch,
                                     )
                                 }
                             }
