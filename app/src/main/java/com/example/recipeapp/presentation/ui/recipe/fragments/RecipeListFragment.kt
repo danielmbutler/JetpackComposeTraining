@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.compose.foundation.ScrollableRow
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -104,16 +105,24 @@ class RecipeListFragment : Fragment() {
                                 )
 
                             }
+
+                            val scrollstate = rememberScrollState()
                             ScrollableRow(
-                                modifier = Modifier.fillMaxWidth()
-                                    .padding(start = 8.dp, bottom = 8.dp)
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(start = 8.dp, bottom = 8.dp),
+                                scrollState = scrollstate
                             ){
+                                scrollstate.scrollTo(viewModel.categoryScrollPosition)
                                 for(category in getAllFoodCategories()){
                                     FoodCategoryChip(
                                         category = category.value,
                                         isSelected = selectedCategory == category,
                                         onSelectedCategoryChanged = {
-                                            viewModel.onSelectedCategoryChanged(it)
+                                            viewModel
+                                                .onSelectedCategoryChanged(it)
+                                            viewModel
+                                                .onChangeCategoryScrollPostions(scrollstate.value)
                                         },
                                         onExecuteSearch = viewModel::newSearch,
                                     )
