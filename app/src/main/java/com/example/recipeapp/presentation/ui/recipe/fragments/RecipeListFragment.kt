@@ -30,6 +30,9 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
 import com.example.recipeapp.R
+import com.example.recipeapp.presentation.AnimationHeartButton
+import com.example.recipeapp.presentation.HeartAnimationDefinition
+import com.example.recipeapp.presentation.HeartAnimationDefinition.HeartButtonState.*
 import com.example.recipeapp.presentation.components.*
 import com.example.recipeapp.util.TAG
 import dagger.hilt.android.AndroidEntryPoint
@@ -75,7 +78,29 @@ class RecipeListFragment : Fragment() {
                         onChangeCategoryScrollPostions = viewModel::onChangeCategoryScrollPostions
                     )
 
-                    PulsingDemo()
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(200.dp),
+                        horizontalArrangement = Arrangement.Center
+                    ){
+                        val state = remember{
+                            mutableStateOf(IDLE)
+                        }
+
+                        AnimationHeartButton(
+                            modifier = Modifier,
+                            buttonState = state,
+                            onToggle = {
+                                state.value = if(state.value == IDLE) ACTIVE
+                                else IDLE
+                            }
+                        )
+                    }
+
+
+
+                   // PulsingDemo()
 
 //                    Box(  // overlays on top of children
 //                        modifier = Modifier.fillMaxSize()
