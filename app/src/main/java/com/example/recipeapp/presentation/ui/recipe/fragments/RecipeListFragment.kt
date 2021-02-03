@@ -30,10 +30,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
 import com.example.recipeapp.R
-import com.example.recipeapp.presentation.components.CircularIndeterminateProgressBar
-import com.example.recipeapp.presentation.components.FoodCategoryChip
-import com.example.recipeapp.presentation.components.RecipeCard
-import com.example.recipeapp.presentation.components.SearchAppBar
+import com.example.recipeapp.presentation.components.*
 import com.example.recipeapp.util.TAG
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -78,22 +75,24 @@ class RecipeListFragment : Fragment() {
                         onChangeCategoryScrollPostions = viewModel::onChangeCategoryScrollPostions
                     )
 
-                    Box(  // overlays on top of children
-                        modifier = Modifier.fillMaxSize()
-                    ){
+                    PulsingDemo()
 
-
-                        LazyColumn {
-                            itemsIndexed(
-                                items = recipes
-                            ){ index, recipe ->
-                                RecipeCard(recipe = recipe, onClick = {})
-
-                            }
-                        }
-
-                        CircularIndeterminateProgressBar(isDisplayed = loading) //highest priority
-                    }
+//                    Box(  // overlays on top of children
+//                        modifier = Modifier.fillMaxSize()
+//                    ){
+//
+//
+//                        LazyColumn {
+//                            itemsIndexed(
+//                                items = recipes
+//                            ){ index, recipe ->
+//                                RecipeCard(recipe = recipe, onClick = {})
+//
+//                            }
+//                        }
+//
+//                        CircularIndeterminateProgressBar(isDisplayed = loading) //highest priority
+//                    }
 
                 }
             }

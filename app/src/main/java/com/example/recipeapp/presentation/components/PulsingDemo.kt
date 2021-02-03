@@ -1,6 +1,47 @@
 package com.example.recipeapp.presentation.components
 
+import android.graphics.Canvas
+import android.util.Log
 import androidx.compose.animation.core.*
+import androidx.compose.animation.transition
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.material.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.unit.dp
+import com.example.recipeapp.presentation.components.PulseAnimationDefinitions.pulseDefinition
+import com.example.recipeapp.presentation.components.PulseAnimationDefinitions.pulsePropkey
+import com.example.recipeapp.util.TAG
+
+
+@Composable
+fun PulsingDemo(){
+    val color = MaterialTheme.colors.primary
+
+    val pulseAnim = transition(
+        definition = pulseDefinition,
+        initState = PulseAnimationDefinitions.PulseState.INITIAL,
+        toState = PulseAnimationDefinitions.PulseState.FINAL,
+    )
+
+    val pulseMagnitude = pulseAnim[pulsePropkey]
+    Log.d(TAG, "PulsingDemo: $pulseMagnitude")
+
+    Canvas(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(55.dp),
+
+        ){
+        drawCircle(
+            radius = pulseMagnitude,
+            brush = SolidColor(color)
+        )
+    }
+}
 
 object PulseAnimationDefinitions{
 
