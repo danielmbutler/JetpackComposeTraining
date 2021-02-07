@@ -13,6 +13,7 @@ import androidx.compose.material.icons.filled.AccountBalanceWallet
 import androidx.compose.material.icons.filled.BrokenImage
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush.Companion.linearGradient
@@ -21,12 +22,15 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import com.example.recipeapp.R
 import com.example.recipeapp.presentation.BaseApplication
 import com.example.recipeapp.presentation.components.*
+import com.example.recipeapp.presentation.components.util.snackbarController
 import com.example.recipeapp.presentation.theme.AppTheme
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -34,6 +38,8 @@ class RecipeListFragment : Fragment() {
 
     @Inject
     lateinit var application: BaseApplication
+
+    private val snackbarController = snackbarController(lifecycleScope)
 
     private val viewModel: RecipeListViewModel by viewModels()
 
@@ -64,35 +70,49 @@ class RecipeListFragment : Fragment() {
                     val query = viewModel.query.value
 
                     val selectedCategory = viewModel.selectedCategory.value
+                    val categoryScrollPosition = viewModel.categoryScrollPosition
 
                     val loading = viewModel.loading.value
 
+                    val scaffoldState = rememberScaffoldState()
+
                     Scaffold(
-                        topBar = {
-                            SearchAppBar(
-                                query = query,
-                                onQueryChanged = viewModel::onQueryChanged,
-                                onExecuteSearch = viewModel::newSearch,
-                                ScrollPostion = viewModel.categoryScrollPosition,
-                                selectedCategory = selectedCategory,
-                                onSelectedCategoryChanged = viewModel::onSelectedCategoryChanged,
-                                onChangeCategoryScrollPostions = viewModel::onChangeCategoryScrollPostions,
-                                onToggleTheme = { application.toggleLightTheme() }
-                            )
-                        },
-                        bottomBar = {
-                            MyBottomBar()
-                        },
-                        drawerContent = {
-                            myDraw()
-                        },
+                            topBar = {
+                                SearchAppBar(
+                                        query = query,
+                                        onQueryChanged = viewModel::onQueryChanged,
+                                        onExecuteSearch = {
+                                            if (viewModel.selectedCategory.value?.value == "Milk"){
+                                                snackbarController.getScope().launch {
+                                                    snackbarController.showSnackbar(
+                                                            scaffoldState = scaffoldState,
+                                                            message = "Invalid category: MILK",
+                                                            actionLable = "Hide"
+                                                    )
+                                                }
+                                            }
+                                            else{
+                                                viewModel.newSearch()
+                                            }
+                                        },
+                                        categories = getAllFoodCategories(),
+                                        selectedCategory = selectedCategory,
+                                        onSelectedCategoryChanged = viewModel::onSelectedCategoryChanged,
+                                        scrollPosition = categoryScrollPosition,
+                                        onChangeScrollPosition = viewModel::onChangeCategoryScrollPostions,
+                                        onToggleTheme = application::toggleLightTheme
+                                )
+                            },
+                            scaffoldState = scaffoldState,
+                            snackbarHost = {
+                                scaffoldState.snackbarHostState
+                            }
 
-
-                        ) {
+                    ) {
                         Box(  // overlays on top of children
                             modifier = Modifier
-                                .fillMaxSize()
-                                .background(color = MaterialTheme.colors.surface)
+                                    .fillMaxSize()
+                                    .background(color = MaterialTheme.colors.surface)
                         ){
                             if(loading){
                                 LoadingRecipeListShimmer(imageHeight = 250.dp)
@@ -111,6 +131,14 @@ class RecipeListFragment : Fragment() {
 
                             }
                             CircularIndeterminateProgressBar(isDisplayed = loading) //highest priority
+                            DefaultSnackbar(
+                                    snackbarHostState = scaffoldState.snackbarHostState,
+                                    onDismiss = {
+                                        scaffoldState.snackbarHostState
+                                                .currentSnackbarData?.dismiss()
+                                    },
+                                    modifier = Modifier.align(Alignment.BottomCenter)
+                                    )
                         }
                     }
                 }
@@ -129,8 +157,8 @@ fun GradientDemo(){
     )
     Surface(shape = MaterialTheme.shapes.small) {
         Spacer(modifier = Modifier
-            .fillMaxSize()
-            .background(brush = brush))
+                .fillMaxSize()
+                .background(brush = brush))
 
     }
 }

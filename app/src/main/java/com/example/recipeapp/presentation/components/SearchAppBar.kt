@@ -21,93 +21,92 @@ import com.example.recipeapp.presentation.ui.recipe.fragments.getAllFoodCategori
 
 @Composable
 fun SearchAppBar(
-    query: String,
-    onQueryChanged: (String) -> Unit,
-    onExecuteSearch: () -> Unit,
-    ScrollPostion: Float,
-    selectedCategory: FoodCategory?,
-    onSelectedCategoryChanged: (String) -> Unit,
-    onChangeCategoryScrollPostions: (Float) -> Unit,
-    onToggleTheme: () -> Unit,
+        query: String,
+        onQueryChanged: (String) -> Unit,
+        onExecuteSearch: () -> Unit,
+        categories: List<FoodCategory>,
+        selectedCategory: FoodCategory?,
+        onSelectedCategoryChanged: (String) -> Unit,
+        scrollPosition: Float,
+        onChangeScrollPosition: (Float) -> Unit,
+        onToggleTheme: () -> Unit,
 ){
-
     Surface(
-        modifier = Modifier
-            .fillMaxWidth(),
-        color = MaterialTheme.colors.surface,
-        elevation = 8.dp,
+            modifier = Modifier
+                    .fillMaxWidth()
+            ,
+            color = MaterialTheme.colors.secondary,
+            elevation = 8.dp,
     ){
-        Column {
-            Row(
-                modifier = Modifier.fillMaxWidth()
-            ){
+        Column{
+            Row(modifier = Modifier.fillMaxWidth()){
                 TextField(
-                    modifier = Modifier
-                        .fillMaxWidth(0.9f)
-                        .padding(8.dp),
-                    value = query,
-                    onValueChange = {   newValue ->
-                        onQueryChanged(newValue)
-                    },
-                    label = {
-                        Text(text = "Search")
-                    },
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Text,
-                        imeAction = ImeAction.Search
-                    ),
-                    leadingIcon = {
-                        Icon(Icons.Filled.Search)
-                    },
-                    onImeActionPerformed = { action, softKeyboardController ->
-                        if(action == ImeAction.Search){
-                            onExecuteSearch()
-                            softKeyboardController
-                                ?.hideSoftwareKeyboard()
-                        }
-
-                    },
-                    textStyle = MaterialTheme.typography.button,
-                    backgroundColor = MaterialTheme.colors.surface,
+                        modifier = Modifier
+                                .fillMaxWidth(.9f)
+                                .padding(8.dp)
+                        ,
+                        value = query,
+                        onValueChange = {
+                            onQueryChanged(it)
+                        },
+                        label = {
+                            Text(text = "Search")
+                        },
+                        keyboardOptions = KeyboardOptions(
+                                keyboardType = KeyboardType.Text,
+                                imeAction = ImeAction.Done,
+                        ),
+                        leadingIcon = {
+                            Icon(Icons.Filled.Search)
+                        },
+                        onImeActionPerformed = { action, softKeyboardController ->
+                            if (action == ImeAction.Done) {
+                                onExecuteSearch()
+                                softKeyboardController?.hideSoftwareKeyboard()
+                            }
+                        },
+                        textStyle = TextStyle(color = MaterialTheme.colors.onSurface),
+                        backgroundColor = MaterialTheme.colors.surface
                 )
                 ConstraintLayout(
-                    modifier = Modifier.align(Alignment.CenterVertically)
+                        modifier = Modifier.align(Alignment.CenterVertically)
                 ) {
-                    val menu = createRef()
+                    val (menu) = createRefs()
                     IconButton(
-                        onClick = onToggleTheme,
-                        modifier = Modifier
-                            .constrainAs(menu){
-                                end.linkTo(parent.end)
-                                top.linkTo(parent.top)
-                                bottom.linkTo(parent.bottom)
-                            }
-                    ) {
+                            modifier = Modifier
+                                    .constrainAs(menu) {
+                                        end.linkTo(parent.end)
+                                        linkTo(top = parent.top, bottom = parent.bottom)
+                                    },
+                            onClick = onToggleTheme
+                            ,
+                    ){
                         Icon(Icons.Filled.MoreVert)
                     }
                 }
-
             }
-
-            val scrollstate = rememberScrollState()
+            val scrollState = rememberScrollState()
             ScrollableRow(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 8.dp, bottom = 8.dp),
-                scrollState = scrollstate
-            ){
-                scrollstate.scrollTo(ScrollPostion)
-                for(category in getAllFoodCategories()){
+                    modifier = Modifier
+                            .padding(start = 8.dp, bottom = 8.dp)
+                    ,
+                    scrollState = scrollState,
+            ) {
+
+                // restore scroll position after rotation
+                scrollState.scrollTo(scrollPosition)
+
+                for(category in categories){
                     FoodCategoryChip(
-                        category = category.value,
-                        isSelected = selectedCategory == category,
-                        onSelectedCategoryChanged = {
+                            category = category.value,
+                            isSelected = selectedCategory == category,
+                            onSelectedCategoryChanged = {
+                                onChangeScrollPosition(scrollState.value)
                                 onSelectedCategoryChanged(it)
-                                onChangeCategoryScrollPostions(scrollstate.value)
-                        },
-                        onExecuteSearch = {
-                            onExecuteSearch()
-                        },
+                            },
+                            onExecuteSearch = {
+                                onExecuteSearch()
+                            },
                     )
                 }
             }
