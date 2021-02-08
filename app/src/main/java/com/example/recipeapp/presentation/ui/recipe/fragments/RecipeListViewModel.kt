@@ -26,10 +26,10 @@ const val STATE_KEY_SELECTED_CATEGORY = "recipe.state.query.selected_category"
 class RecipeListViewModel
 @ViewModelInject
 constructor(
-    private val random: String,
-    private val repository: RecipeRepository,
-    @Named("auth_token") private val token: String,
-    @Assisted private val savedStateHandle: SavedStateHandle,
+        private val random: String,
+        private val repository: RecipeRepository,
+        @Named("auth_token") private val token: String,
+        @androidx.hilt.Assisted private val savedStateHandle: SavedStateHandle,
 ): ViewModel(){
   val recipes: MutableState<List<Recipe>> = mutableStateOf(ArrayList())
 
