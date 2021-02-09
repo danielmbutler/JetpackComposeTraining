@@ -23,9 +23,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.example.recipeapp.presentation.BaseApplication
-import com.example.recipeapp.presentation.components.CircularIndeterminateProgressBar
-import com.example.recipeapp.presentation.components.DefaultSnackbar
-import com.example.recipeapp.presentation.components.RecipeView
+import com.example.recipeapp.presentation.components.*
 import com.example.recipeapp.presentation.components.util.snackbarController
 import com.example.recipeapp.presentation.theme.AppTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -74,7 +72,7 @@ class RecipeFragment  : Fragment() {
                     ) {
                         Box(modifier = Modifier.fillMaxSize()){
                             if(loading && recipe == null){
-                                Text(text = "Loading..")
+                                LoadingRecipeShimmer(imageHeight = IMAGE_HEIGHT.dp)
                             } else {
                                 recipe?.let{
                                     if(it.id == 1){
